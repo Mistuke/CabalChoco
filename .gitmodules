@@ -1,0 +1,3 @@
+[submodule "chocolateytemplates"]
+	path = chocolateytemplates
+	url = https://github.com/chocolatey/chocolateytemplates.git
