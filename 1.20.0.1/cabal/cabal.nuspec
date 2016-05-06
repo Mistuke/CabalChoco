@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if ??? doesn?t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <!-- Read this before publishing packages to chocolatey.org: https://github.com/chocolatey/chocolatey/wiki/CreatePackages -->
+    <id>cabal</id>
+    <title>Cabal</title>
+    <version>1.20.0.1</version>
+    <authors>Cabal Team</authors>
+    <owners>Tamar Christina</owners>
+    <summary>The 'cabal' command-line program simplifies the process of managing Haskell software by automating the fetching, configuration, compilation and installation of Haskell libraries and programs.</summary>
+    <description>Cabal is a system for building and packaging Haskell libraries and programs. It defines a common interface for package authors and distributors to easily build their applications in a portable way. Cabal is part of a larger infrastructure for distributing, organizing, and cataloging Haskell libraries and programs. 
+
+Specifically, the Cabal describes what a Haskell package is, how these packages interact with the language, and what Haskell implementations must to do to support packages. The Cabal also specifies some infrastructure (code) that makes it easy for tool authors to build and distribute conforming packages. 
+
+The Cabal is only one contribution to the larger goal. In particular, the Cabal says nothing about more global issues such as how authors decide where in the module name space their library should live; how users can find a package they want; how orphan packages find new owners; and so on. 
+ </description>
+    <projectUrl>http://hackage.haskell.org/package/cabal-install-1.20.0.1</projectUrl>
+    <tags>cabal ghc haskell</tags>
+    <copyright>Copyright (c) 2003-2008, Isaac Jones, Simon Marlow, Martin Sjögren,
+                         Bjorn Bringert, Krasimir Angelov,
+                         Malcolm Wallace, Ross Patterson,
+                         Lemmih, Paolo Martini, Don Stewart,
+                         Duncan Coutts</copyright>
+    <licenseUrl>http://hackage.haskell.org/package/cabal-install-1.20.0.1/src/LICENSE</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <!-- Important note about https://cdn.rawgit.com: Files are cached permanently after the first request. Use commit URLs when updating the icon. -->
+    <iconUrl>https://www.haskell.org/cabal/images/Cabal-dark.png</iconUrl>
+<!--     <dependencies>
+      <dependency id="7zip.commandline" version="" />
+    </dependencies> -->
+    <releaseNotes>http://hackage.haskell.org/package/cabal-install-1.20.0.1/src/README</releaseNotes>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>
