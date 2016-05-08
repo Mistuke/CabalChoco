@@ -30,8 +30,13 @@ The Cabal is only one contribution to the larger goal. In particular, the Cabal 
       <dependency id="7zip.commandline" version="" />
     </dependencies> -->
     <releaseNotes>http://hackage.haskell.org/package/cabal-install-1.18.0.3/src/README</releaseNotes>
+    <docsUrl>https://www.haskell.org/cabal/users-guide/</docsUrl>
+    <mailingListUrl>https://mail.haskell.org/cgi-bin/mailman/listinfo/haskell-cafe</mailingListUrl>
+    <bugTrackerUrl>https://github.com/haskell/cabal/issues</bugTrackerUrl>
+    <projectSourceUrl>https://github.com/haskell/cabal/</projectSourceUrl>
   </metadata>
   <files>
-    <file src="tools\**" target="tools" />
+      <file src="tools\cabal.exe" target="tools\cabal.exe" />
+      <file src="LICENSE.txt" target="LICENSE.txt" />
   </files>
 </package>
