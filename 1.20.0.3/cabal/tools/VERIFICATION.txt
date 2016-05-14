@@ -1,0 +1,7 @@
+VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+ 
+1) Download binary from https://www.haskell.org/cabal/release/cabal-install-1.20.0.3/cabal-i386-unknown-mingw32.tar.gz
+2) Pack with upx -9 to reduce size (version used http://upx.sourceforge.net/download/00-OLD-VERSIONS/upx307w.zip)
+3) Compare MD5

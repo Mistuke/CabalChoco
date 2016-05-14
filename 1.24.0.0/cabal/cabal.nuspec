@@ -30,6 +30,7 @@ The Cabal is only one contribution to the larger goal. In particular, the Cabal 
     </metadata>
     <files>
         <file src="tools\cabal.exe" target="tools\cabal.exe" />
+        <file src="tools\VERIFICATION.TXT" target="tools\VERIFICATION.TXT" />
         <file src="LICENSE.txt" target="LICENSE.txt" />
     </files>
 </package>
