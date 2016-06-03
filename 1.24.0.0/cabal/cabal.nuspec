@@ -10,7 +10,9 @@
         <projectUrl>http://hackage.haskell.org/package/cabal-install-1.24.0.0</projectUrl>
         <iconUrl>https://www.haskell.org/cabal/images/Cabal-dark.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Cabal is a system for building and packaging Haskell libraries and programs. It defines a common interface for package authors and distributors to easily build their applications in a portable way. Cabal is part of a larger infrastructure for distributing, organizing, and cataloging Haskell libraries and programs. 
+        <description>The 'cabal.exe' command-line program simplifies the process of managing Haskell software by automating the fetching, configuration, compilation and installation of Haskell libraries and programs.
+        
+        Cabal is a system for building and packaging Haskell libraries and programs. It defines a common interface for package authors and distributors to easily build their applications in a portable way. Cabal is part of a larger infrastructure for distributing, organizing, and cataloging Haskell libraries and programs. 
 
 Specifically, the Cabal describes what a Haskell package is, how these packages interact with the language, and what Haskell implementations must to do to support packages. The Cabal also specifies some infrastructure (code) that makes it easy for tool authors to build and distribute conforming packages. 
 
