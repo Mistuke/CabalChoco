@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
     <metadata>
         <id>cabal-head</id>
-        <version>%build.version%-%build.date%</version>
+        <version>%build.version%-B%build.date%</version>
         <title>Cabal</title>
         <authors>Cabal Team</authors>
         <owners>Tamar Christina</owners>

@@ -1,4 +1,4 @@
-$version     = '%build.version%-%build.date%'
+$version     = '%build.version%-B%build.date%'
 $packageName = 'cabal-head'
 $url         = '%deploy.url.32bit%'
 $url64       = '%deploy.url.64bit%'
