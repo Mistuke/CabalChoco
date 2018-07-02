@@ -3,7 +3,7 @@
     <metadata>
         <id>cabal-head</id>
         <version>%build.version%-B%build.date%</version>
-        <title>Cabal</title>
+        <title>Cabal (Nightly build)</title>
         <authors>Cabal Team</authors>
         <owners>Tamar Christina</owners>
         <licenseUrl>https://github.com/haskell/cabal/blob/%build.commit.hash%/LICENSE</licenseUrl>
