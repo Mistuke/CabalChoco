@@ -1,0 +1,6 @@
+VERIFICATION
+Verification is intended to assist the Chocolatey moderators and community
+in verifying that this package's contents are trustworthy.
+
+1) Download binary from https://www.haskell.org/cabal/release/cabal-install-2.4.0.0/cabal-install-2.4.0.0-x86_64-unknown-mingw32.zip
+2) Compare MD5
