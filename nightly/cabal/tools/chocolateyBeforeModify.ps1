@@ -166,3 +166,6 @@ function Restore-Config-Cabal {
 Restore-Config-Cabal
 Uninstall-ChocolateyEnvironmentVariable -VariableName '_MSYS2_BASH'
 Uninstall-ChocolateyEnvironmentVariable -VariableName '_MSYS2_PREFIX'
+# Cleanup the batch file we created
+Get-Command Mingw64-Pkg -ErrorAction SilentlyContinue `
+  | ForEach-Object { Remove-Item -Force $_ }

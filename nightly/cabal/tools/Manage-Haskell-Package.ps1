@@ -11,7 +11,7 @@
     The action to perform. Must be one of install, uninstall or update.
 .PARAMETER Package
     The name of the Mingw64 package to install into the msys2 environment.
-.PARAMETER Confirm
+.PARAMETER NoConfirm
     Indicates whether or not an interactive prompt should be used to confirm before
     action is carried out.
 .EXAMPLE
@@ -26,7 +26,7 @@ Param(
   [ValidateSet("install","uninstall", "update")]
   [String] $Action
 , [string] $Package
-, [switch] $Confirm = $false
+, [switch] $NoConfirm = $false
 )
 
 $bash = $Env:_MSYS2_BASH
@@ -63,12 +63,12 @@ switch ($Action){
   }
 }
 
-switch ($Confirm){
-  $false {
+switch ($NoConfirm){
+  $true {
     $arg = "--noconfirm"
     break
   }
-  $true {
+  $false {
     $arg = "--confirm"
     break
   }
