@@ -192,12 +192,13 @@ function Find-Bash {
   $ErrorActionPreference = 'Stop'
   $msys2_path = Find-MSYS2
   $bin        = Join-Path (Join-Path $msys2_path "usr") "bin"
-  return (Join-Path $bin "bash.exe")
+  $bash       = Join-Path $bin "bash.exe"
+  return $bash
 }
 
 # Now execute cabal configuration updates
 Configure-Cabal
-$pacman = Find-Bash
+$bash = Find-Bash
 $prefix = if ($is64) { 'x86_64' } else { 'i686' }
 Install-ChocolateyEnvironmentVariable "_MSYS2_BASH" "$bash"
 Install-ChocolateyEnvironmentVariable "_MSYS2_PREFIX" "$prefix"

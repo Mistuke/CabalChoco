@@ -48,7 +48,7 @@ The Cabal is only one contribution to the larger goal. In particular, the Cabal 
     </metadata>
     <files>
         <file src="tools\chocolateyInstall.ps1" target="tools\chocolateyInstall.ps1" />
-        <file src="tools\chocolateyUninstall.ps1" target="tools\chocolateyUninstall.ps1" />
+        <file src="tools\chocolateyBeforeModify.ps1" target="tools\chocolateyBeforeModify.ps1" />
         <file src="tools\Manage-Haskell-Package.ps1" target="tools\Manage-Haskell-Package.ps1" />
         <file src="LICENSE.txt" target="LICENSE.txt" />
     </files>
