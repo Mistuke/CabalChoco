@@ -187,7 +187,7 @@ function Configure-Cabal {
   Write-Host "Updated cabal configuration."
 }
 
-Find-Bash {
+function Find-Bash {
   param()
   $ErrorActionPreference = 'Stop'
   $msys2_path = Find-MSYS2
