@@ -13,6 +13,8 @@ Install-ChocolateyZipPackage `
   -Url $url -ChecksumType sha256 -Checksum %deploy.sha256.32bit% `
   -Url64bit $url64 -ChecksumType64 sha256 -Checksum64 %deploy.sha256.64bit%
 
+$cabal = Join-Path $packageFullName "cabal.exe"
+
   function Find-Entry {
     param( [string] $app )
     Get-Command -ErrorAction SilentlyContinue $app `
@@ -54,6 +56,8 @@ function Detect-GHC-Version {
   $proc = Execute-Command "Detect GHC Version" "ghc" "--version"
 
   if ($proc.ExitCode -ne 0) {
+    Write-Error $proc.stdout
+    Write-Error $proc.stderr
     throw ("Could detect GHC version.")
   }
 
@@ -107,12 +111,14 @@ function Find-MSYS2 {
 function ReadCabal-Config {
   param( [string] $key )
 
-  $prog = "cabal.exe"
+  $prog = "$cabal"
   $cmd  = "user-config diff -a ${key}:"
 
   $proc = Execute-Command "Reading cabal config key '${key}'." $prog $cmd
 
   if ($proc.ExitCode -ne 0) {
+    Write-Error $proc.stdout
+    Write-Error $proc.stderr
     throw ("Could not read cabal configuration key '${key}'.")
   }
 
@@ -137,13 +143,15 @@ function UpdateCabal-Config {
   if ((!$values) -or ($values.Count -eq 0)) {
     return
   }
-  $prog = "cabal.exe"
+  $prog = "$cabal"
   $value = [String]::Join(";", $values)
   $cmd  = "user-config update -a `"${key}: $value`""
 
   $proc = Execute-Command "Update cabal config key '${key}'." $prog $cmd
 
   if ($proc.ExitCode -ne 0) {
+    Write-Error $proc.stdout
+    Write-Error $proc.stderr
     throw ("Could not update cabal configuration key '${key}'.")
   }
 
