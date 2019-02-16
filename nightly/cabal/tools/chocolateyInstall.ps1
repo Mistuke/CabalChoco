@@ -53,7 +53,7 @@ Function Execute-Command {
 }
 
 function Detect-GHC-Versions {
-  return Get-ChildItem "C:\ghc\ghc-*\bin" `
+  return Get-ChildItem "C:\ghc\ghc-*\bin" -ErrorAction SilentlyContinue `
     | Sort-Object CreationTime -Descending `
     | ForEach-Object { $_.ToString() }
 }
