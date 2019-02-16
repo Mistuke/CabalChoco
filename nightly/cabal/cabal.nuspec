@@ -10,9 +10,21 @@
         <projectUrl>https://github.com/haskell/cabal/tree/%build.commit.hash%</projectUrl>
         <iconUrl>https://www.haskell.org/cabal/images/Cabal-dark.png</iconUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>NOTE: This is a nightly build of the cabal-install tool for Haskell intended for eco-system support.
+        <description>
+        ```
+        NOTE: This is a nightly build of the cabal-install tool for Haskell intended for eco-system support.
         It is built from commit %build.commit.hash% from the git repository.
         No support is provided for these builds.  For supported versions see the 'cabal' package.
+        ```
+
+        ```
+        This cabal package will automatically configure msys2 for use by cabal.  If you already have msys2
+        install then nothing else needs to be done. Otherwise msys2 can be installed with `choco install msys2`.
+        The package also automatically detects AppVeyor and will configure the msys2 instance that is available by default.
+
+        Lastly in order to facilitate package installations a new CmdLet `mingw64-pkg` is created to make it easier to install
+        native dependencies such as `gtk`.
+        ```
 
         The 'cabal.exe' command-line program simplifies the process of managing Haskell software by automating the fetching, configuration, compilation and installation of Haskell libraries and programs.
 
@@ -36,6 +48,8 @@ The Cabal is only one contribution to the larger goal. In particular, the Cabal 
     </metadata>
     <files>
         <file src="tools\chocolateyInstall.ps1" target="tools\chocolateyInstall.ps1" />
+        <file src="tools\chocolateyUninstall.ps1" target="tools\chocolateyUninstall.ps1" />
+        <file src="tools\Manage-Haskell-Package.ps1" target="tools\Manage-Haskell-Package.ps1" />
         <file src="LICENSE.txt" target="LICENSE.txt" />
     </files>
 </package>

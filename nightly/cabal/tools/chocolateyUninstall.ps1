@@ -7,13 +7,7 @@ $binRoot         = $(Split-Path -parent $MyInvocation.MyCommand.Definition)
 $packageFullName = Join-Path $binRoot ($packageName + '-' + $version)
 $is64 = (Get-OSArchitectureWidth 64)  -and $env:chocolateyForceX86 -ne 'true'
 
-Install-ChocolateyZipPackage `
-  -PackageName $packageName `
-  -UnzipLocation $packageFullName `
-  -Url $url -ChecksumType sha256 -Checksum %deploy.sha256.32bit% `
-  -Url64bit $url64 -ChecksumType64 sha256 -Checksum64 %deploy.sha256.64bit%
-
-  function Find-Entry {
+function Find-Entry {
     param( [string] $app )
     Get-Command -ErrorAction SilentlyContinue $app `
       | select -first 1 `
@@ -150,7 +144,7 @@ function UpdateCabal-Config {
   Write-Debug "Wrote Cabal config ${key}: ${value}"
 }
 
-function Configure-Cabal {
+function Restore-Config-Cabal {
   param()
 
   $ErrorActionPreference = 'Stop'
@@ -164,42 +158,29 @@ function Configure-Cabal {
 
   # Build new binary paths
   $native_bin     = Join-Path $native_path "bin"
-  $new_prog_paths = @()
-  $new_prog_paths += Join-Path (Join-Path $msys2_path "usr") "bin"
-  $new_prog_paths += $native_bin
-  $new_prog_paths += $prog_path
+  $new_prog_paths = {$prog_path}.Invoke()
+  $new_prog_paths.Remove((Join-Path (Join-Path $msys2_path "usr") "bin")) | Out-Null
+  $new_prog_paths.Remove(($native_bin)) | Out-Null
   $new_prog_paths = $new_prog_paths | Select-Object -Unique
 
   # Build new library paths
-  $new_lib_dirs = @(Join-Path $native_path "lib")
-  $new_lib_dirs += $lib_dirs
+  $new_lib_dirs = {$lib_dirs}.Invoke()
+  $new_lib_dirs.Remove((Join-Path $native_path "lib")) | Out-Null
   $new_lib_dirs = $new_lib_dirs | Select-Object -Unique
 
   # Build new include paths
-  $new_include_dirs = @(Join-Path $native_path "include")
-  $new_include_dirs += $include_dirs
+  $new_include_dirs = {$include_dirs}.Invoke()
+  $new_include_dirs.Remove((Join-Path $native_path "include")) | Out-Null
   $new_include_dirs = $new_include_dirs | Select-Object -Unique
 
   UpdateCabal-Config "extra-prog-path"    $new_prog_paths
   UpdateCabal-Config "extra-lib-dirs"     $new_lib_dirs
   UpdateCabal-Config "extra-include-dirs" $new_include_dirs
 
-  Write-Host "Updated cabal configuration."
-}
-
-Find-Bash {
-  param()
-  $ErrorActionPreference = 'Stop'
-  $msys2_path = Find-MSYS2
-  $bin        = Join-Path (Join-Path $msys2_path "usr") "bin"
-  return (Join-Path $bin "bash.exe")
+  Write-Host "Restored cabal configuration."
 }
 
 # Now execute cabal configuration updates
-Configure-Cabal
-$pacman = Find-Bash
-$prefix = if ($is64) { 'x86_64' } else { 'i686' }
-Install-ChocolateyEnvironmentVariable "_MSYS2_BASH" "$bash"
-Install-ChocolateyEnvironmentVariable "_MSYS2_PREFIX" "$prefix"
-$psFile = Join-Path $(Split-Path -Parent $MyInvocation.MyCommand.Definition) "Manage-Haskell-Package.ps1"
-Install-ChocolateyPowershellCommand -PackageName 'cabal.powershell' -PSFileFullPath $psFile
+Restore-Config-Cabal
+Uninstall-ChocolateyEnvironmentVariable -VariableName '_MSYS2_BASH'
+Uninstall-ChocolateyEnvironmentVariable -VariableName '_MSYS2_PREFIX'
