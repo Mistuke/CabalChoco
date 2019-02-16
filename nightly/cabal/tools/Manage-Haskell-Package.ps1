@@ -20,76 +20,74 @@
     Author: Tamar Christina
     Date:   February 16, 2019
 #>
-Function Mingw64-Pkg
-{
-    Param(
-      [Parameter(Mandatory=$true)]
-      [ValidateSet("install","uninstall", "update")]
-      [String] $Action
-    , [string] $Package
-    , [switch] $Confirm = $false
-    )
 
-   $bash = $Env:_MSYS2_BASH
-   $prefix = $Env:_MSYS2_PREFIX
-   if ((!$bash) -or ($bash -eq "") -or (!$prefix) -or ($prefix -eq "")) {
-     throw ("Bash environment variable found, are you sure you installed cabal and msys2 via chocolatey?")
-   }
+Param(
+  [Parameter(Mandatory=$true)]
+  [ValidateSet("install","uninstall", "update")]
+  [String] $Action
+, [string] $Package
+, [switch] $Confirm = $false
+)
 
-   if(![System.IO.File]::Exists($bash)){
-     throw ("Bash not found, try `choco install msys2' first.")
-   }
+$bash = $Env:_MSYS2_BASH
+$prefix = $Env:_MSYS2_PREFIX
+if ((!$bash) -or ($bash -eq "") -or (!$prefix) -or ($prefix -eq "")) {
+  throw ("Bash environment variable found, are you sure you installed cabal and msys2 via chocolatey?")
+}
 
-   $package = "mingw-w64-${prefix}-${Package}"
+if(![System.IO.File]::Exists($bash)){
+  throw ("Bash not found, try `choco install msys2' first.")
+}
 
-   switch ($Action){
-     "install" {
-       $cmd = "-S"
-       if((!$Package) -or ($Package -eq "")){
-          throw ("Package name required when installing package.")
-       }
-       break
-     }
-     "uninstall" {
-       $cmd = "-R"
-       if((!$Package) -or ($Package -eq "")){
-          throw ("Package name required when removing package.")
-       }
-       break
-     }
-     "update" {
-       $cmd = "-Sy"
-       $package = ""
-       break
-     }
-   }
+$package = "mingw-w64-${prefix}-${Package}"
 
-   switch ($Confirm){
-     $false {
-       $arg = "--noconfirm"
-       break
-     }
-     $true {
-       $arg = "--confirm"
-       break
-     }
-   }
+switch ($Action){
+  "install" {
+    $cmd = "-S"
+    if((!$Package) -or ($Package -eq "")){
+      throw ("Package name required when installing package.")
+    }
+    break
+  }
+  "uninstall" {
+    $cmd = "-R"
+    if((!$Package) -or ($Package -eq "")){
+      throw ("Package name required when removing package.")
+    }
+    break
+  }
+  "update" {
+    $cmd = "-Sy"
+    $package = ""
+    break
+  }
+}
+
+switch ($Confirm){
+  $false {
+    $arg = "--noconfirm"
+    break
+  }
+  $true {
+    $arg = "--confirm"
+    break
+  }
+}
 
 
-   $osBitness = "64"
-   if ($prefix -eq "i686") {
-     $osBitness = "32"
-   }
+$osBitness = "64"
+if ($prefix -eq "i686") {
+  $osBitness = "32"
+}
 
-   # Set the APPDATA path which does not get inherited during these invokes
-   # and set MSYSTEM to make sure we're using the right system
-   $envdata = "export APPDATA=""" + $Env:AppData + """ && export MSYSTEM=MINGW" + $osBitness + " && "
+# Set the APPDATA path which does not get inherited during these invokes
+# and set MSYSTEM to make sure we're using the right system
+$envdata = "export APPDATA=""" + $Env:AppData + """ && export MSYSTEM=MINGW" + $osBitness + " && "
 
-   $proc = Start-Process -NoNewWindow -UseNewEnvironment -Wait $bash `
-                         -ArgumentList '--login', '-c', "'$envdata pacman $cmd $arg $package'" `
-                         -PassThru
+$proc = Start-Process -NoNewWindow -UseNewEnvironment -Wait $bash `
+                      -ArgumentList '--login', '-c', "'$envdata pacman $cmd $arg $package'" `
+                      -PassThru
 
-   if ((-not $ignoreExitCode) -and ($proc.ExitCode -ne 0)) {
-       throw ("`'${bash}`' did not complete successfully. ExitCode: " + $proc.ExitCode)
-   }
+if ((-not $ignoreExitCode) -and ($proc.ExitCode -ne 0)) {
+    throw ("`'${bash}`' did not complete successfully. ExitCode: " + $proc.ExitCode)
 }

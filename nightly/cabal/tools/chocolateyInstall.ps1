@@ -18,7 +18,7 @@ $cabal = Join-Path $packageFullName "cabal.exe"
   function Find-Entry {
     param( [string] $app )
     Get-Command -ErrorAction SilentlyContinue $app `
-      | select -first 1 `
+      | Select-Object -first 1 `
       | ForEach-Object { Split-Path $_.Path -Parent }
 }
 
@@ -52,16 +52,10 @@ Function Execute-Command {
   }
 }
 
-function Detect-GHC-Version {
-  $proc = Execute-Command "Detect GHC Version" "ghc" "--version"
-
-  if ($proc.ExitCode -ne 0) {
-    Write-Error $proc.stdout
-    Write-Error $proc.stderr
-    throw ("Could detect GHC version.")
-  }
-
-  return $proc.stdout | ForEach-Object { $_.Trim().Split(' ') } | Select-Object -last 1
+function Detect-GHC-Versions {
+  return Get-ChildItem "C:\ghc\ghc-*\bin" `
+    | Sort-Object CreationTime -Descending `
+    | ForEach-Object { $_.ToString() }
 }
 
 function Find-MSYS2 {
@@ -76,13 +70,12 @@ function Find-MSYS2 {
   $dir_name = if ($is64) { 'msys64' } else { 'msys32' }
   # Detect AppVeyor installs
   if (($null -ne $Env:APPVEYOR) -and ("" -ne $Env:APPVEYOR)) {
-    Write-Hos "AppVeyor detected. Using AppVeyor default paths."
+    Write-Host "AppVeyor detected. Using AppVeyor default paths."
     # We need to fix up some paths for AppVeyor
-    $ghcver = Detect-GHC-Version
-    $ghcpath = "C:\\ghc\\ghc-${ghcver}"
+    $ghcpaths = Detect-GHC-Versions
+    ForEach ($path in $ghcpaths) { Install-ChocolateyPath $path }
     $msys2 = Join-Path $Env:SystemDrive $dir_name
 
-    Install-ChocolateyPath "$ghcpath"
     # I'm not a fan of doing this, but we need auto-reconf available.
     Install-ChocolateyPath (Join-Path (Join-Path "${msys2}" "mingw64") "bin")
     Install-ChocolateyPath (Join-Path (Join-Path "${msys2}" "usr") "bin")
@@ -101,7 +94,7 @@ function Find-MSYS2 {
     # msys2 was not found already installed, assume user will install
     # it in the default directory, so create the expected default msys2
     # installation path.
-    $msys2    = "{0}\\{1}" -f (Get-ToolsLocation), $dir_name
+    $msys2    = "{0}\{1}" -f (Get-ToolsLocation), $dir_name
   }
 
   Write-Debug "Msys2 directory: ${msys2}"
@@ -141,7 +134,7 @@ function UpdateCabal-Config {
        )
 
   if ((!$values) -or ($values.Count -eq 0)) {
-    return
+    $values = ""
   }
   $prog = "$cabal"
   $value = [String]::Join(";", $values)
@@ -210,5 +203,5 @@ $bash = Find-Bash
 $prefix = if ($is64) { 'x86_64' } else { 'i686' }
 Install-ChocolateyEnvironmentVariable "_MSYS2_BASH" "$bash"
 Install-ChocolateyEnvironmentVariable "_MSYS2_PREFIX" "$prefix"
-$psFile = Join-Path $(Split-Path -Parent $MyInvocation.MyCommand.Definition) "Manage-Haskell-Package.ps1"
-Install-ChocolateyPowershellCommand -PackageName 'cabal.powershell' -PSFileFullPath $psFile
+$psFile = Join-Path $(Split-Path -Parent $MyInvocation.MyCommand.Definition) "Mingw64-Pkg.ps1"
+Install-ChocolateyPowershellCommand -PackageName '${packageName}.powershell' -PSFileFullPath $psFile
