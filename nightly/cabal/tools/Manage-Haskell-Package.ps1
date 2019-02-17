@@ -96,7 +96,7 @@ switch ($Action){
 .NOTES
   Author: Tamar Christina
   Date:   February 16, 2019"
-    return 0
+    return
   }
 }
 
