@@ -71,14 +71,7 @@ function Find-MSYS2 {
   # Detect AppVeyor installs
   if (($null -ne $Env:APPVEYOR) -and ("" -ne $Env:APPVEYOR)) {
     Write-Host "AppVeyor detected. Using AppVeyor default paths."
-    # We need to fix up some paths for AppVeyor
-    $ghcpaths = Detect-GHC-Versions
-    ForEach ($path in $ghcpaths) { Install-ChocolateyPath $path }
     $msys2 = Join-Path $Env:SystemDrive $dir_name
-
-    # I'm not a fan of doing this, but we need auto-reconf available.
-    Install-ChocolateyPath (Join-Path (Join-Path "${msys2}" "mingw64") "bin")
-    Install-ChocolateyPath (Join-Path (Join-Path "${msys2}" "usr") "bin")
   }
 
   # Check for standalone msys2 installs
@@ -186,6 +179,19 @@ function Configure-Cabal {
   UpdateCabal-Config "extra-include-dirs" $new_include_dirs
 
   Write-Host "Updated cabal configuration."
+
+  Install-ChocolateyPath (Join-Path (Join-Path "$Env:APPDATA" "cabal") "bin")
+
+  if (($null -ne $Env:APPVEYOR) -and ("" -ne $Env:APPVEYOR)) {
+    Write-Host "Configuring AppVeyor PATH."
+    # We need to fix up some paths for AppVeyor
+    $ghcpaths = Detect-GHC-Versions
+    ForEach ($path in $ghcpaths) { Install-ChocolateyPath $path }
+
+    # I'm not a fan of doing this, but we need auto-reconf available.
+    Install-ChocolateyPath (Join-Path (Join-Path "${msys2_path}" "mingw64") "bin")
+    Install-ChocolateyPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
+  }
 }
 
 function Find-Bash {
