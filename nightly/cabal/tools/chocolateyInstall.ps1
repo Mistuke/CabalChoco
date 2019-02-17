@@ -203,5 +203,5 @@ $bash = Find-Bash
 $prefix = if ($is64) { 'x86_64' } else { 'i686' }
 Install-ChocolateyEnvironmentVariable "_MSYS2_BASH" "$bash"
 Install-ChocolateyEnvironmentVariable "_MSYS2_PREFIX" "$prefix"
-$psFile = Join-Path $(Split-Path -Parent $MyInvocation.MyCommand.Definition) "Mingw64-Pkg.ps1"
+$psFile = Join-Path $(Split-Path -Parent $MyInvocation.MyCommand.Definition) "mingw64-pkg.ps1"
 Install-ChocolateyPowershellCommand -PackageName '${packageName}.powershell' -PSFileFullPath $psFile

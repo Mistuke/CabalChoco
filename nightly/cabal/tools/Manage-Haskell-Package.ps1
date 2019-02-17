@@ -26,34 +26,6 @@
     Date:   February 16, 2019
 #>
 
-function print-usage {
-  Write-Host ".SYNOPSIS
-  Install a Mingw-w64 native package such that cabal and ghc will recognize them.
-.DESCRIPTION
-  This CmdLet makes it easier to install native Mingw-w64 packages into MSYS2 such
-  that cabal-install and GHC can use them without any other configuration required.
-
-  This will not allow installation of MSYS2 packages.  Your global namespace will
-  not be poluted by the use of this CmdLet.
-.PARAMETER Action
-  The action to perform. Must be one of install, uninstall, update or shell.
-
-  - install: install a new native package
-  - uninstall: remove native package
-  - update: sync the repositories, will not upgrade any packages.
-  - shell: open a bash shell
-.PARAMETER Package
-  The name of the Mingw64 package to install into the msys2 environment.
-.PARAMETER NoConfirm
-  Indicates whether or not an interactive prompt should be used to confirm before
-  action is carried out.
-.EXAMPLE
-  C:\PS> mingw-pkg install gtk2
-.NOTES
-  Author: Tamar Christina
-  Date:   February 16, 2019"
-}
-
 Param(
   [ValidateSet("install","uninstall", "update", "shell")]
   [String] $Action
@@ -99,7 +71,31 @@ switch ($Action){
     break
   }
   default {
-    print-usage
+    Write-Host ".SYNOPSIS
+  Install a Mingw-w64 native package such that cabal and ghc will recognize them.
+.DESCRIPTION
+  This CmdLet makes it easier to install native Mingw-w64 packages into MSYS2 such
+  that cabal-install and GHC can use them without any other configuration required.
+
+  This will not allow installation of MSYS2 packages.  Your global namespace will
+  not be poluted by the use of this CmdLet.
+.PARAMETER Action
+  The action to perform. Must be one of install, uninstall, update or shell.
+
+  - install: install a new native package
+  - uninstall: remove native package
+  - update: sync the repositories, will not upgrade any packages.
+  - shell: open a bash shell
+.PARAMETER Package
+  The name of the Mingw64 package to install into the msys2 environment.
+.PARAMETER NoConfirm
+  Indicates whether or not an interactive prompt should be used to confirm before
+  action is carried out.
+.EXAMPLE
+  C:\PS> mingw-pkg install gtk2
+.NOTES
+  Author: Tamar Christina
+  Date:   February 16, 2019"
     return 0
   }
 }
@@ -132,9 +128,9 @@ if ($false -eq $shell) {
 
   if ((-not $ignoreExitCode) -and ($proc.ExitCode -ne 0)) {
       throw ("`'${bash}`' did not complete successfully. ExitCode: " + $proc.ExitCode)
+  }
 } else {
   $proc = Start-Process -NoNewWindow -UseNewEnvironment -Wait $bash `
                         -ArgumentList '--login' `
                         -PassThru
-}
 }

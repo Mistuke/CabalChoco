@@ -49,7 +49,7 @@ The Cabal is only one contribution to the larger goal. In particular, the Cabal 
     <files>
         <file src="tools\chocolateyInstall.ps1" target="tools\chocolateyInstall.ps1" />
         <file src="tools\chocolateyBeforeModify.ps1" target="tools\chocolateyBeforeModify.ps1" />
-        <file src="tools\Manage-Haskell-Package.ps1" target="tools\Mingw64-Pkg.ps1" />
+        <file src="tools\Manage-Haskell-Package.ps1" target="tools\mingw64-pkg.ps1" />
         <file src="LICENSE.txt" target="LICENSE.txt" />
     </files>
 </package>
