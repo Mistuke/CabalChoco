@@ -19,7 +19,7 @@ $cabal = Join-Path $packageFullName "cabal.exe"
 # Appends to a path.  We use this in certain cases when we need to Override an
 # existing path entry.  Such as on AppVeyor which adds both cygwin and msys2
 # on PATH.
-function Install-PreChocolateyPath {
+function Install-AppVeyorPath {
 param(
   [parameter(Mandatory=$true, Position=0)][string] $pathToInstall
 )
@@ -28,7 +28,7 @@ param(
   ## Called from chocolateysetup.psm1 - wrap any Write-Host in try/catch
 
   $originalPathToInstall = $pathToInstall
-  $pathType = [System.EnvironmentVariableTarget]::User
+  $pathType = [System.EnvironmentVariableTarget]::Machine
 
   #get the PATH variable
   Update-SessionEnvironment
@@ -228,12 +228,12 @@ function Configure-Cabal {
     $ghcpaths = Detect-GHC-Versions
     ForEach ($path in $ghcpaths) { Install-ChocolateyPath $path }
 
-    # Override msys2 git with git for Windows
-    Install-PreChocolateyPath "$($env:SystemDrive)\Program Files\Git\mingw64\bin"
-    Install-PreChocolateyPath "$($env:SystemDrive)\Program Files\Git\cmd"
     # I'm not a fan of doing this, but we need auto-reconf available.
-    Install-PreChocolateyPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
-    Install-PreChocolateyPath (Join-Path (Join-Path "${msys2_path}" "mingw64") "bin")
+    Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "mingw64") "bin")
+    Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
+    # Override msys2 git with git for Windows
+    Install-AppVeyorPath "$($env:SystemDrive)\Program Files\Git\cmd"
+    Install-AppVeyorPath "$($env:SystemDrive)\Program Files\Git\mingw64\bin"
   }
 }
 
