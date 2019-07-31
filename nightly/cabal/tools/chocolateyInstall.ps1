@@ -117,7 +117,7 @@ function ReadCabal-Config {
     $value = $procout.ToString().Split(@(':'), 2, $option)[1].ToString()
     $value = $value.Split([Environment]::NewLine)[0].Trim()
     Write-Debug "Read Cabal config ${key}: ${value}"
-    return {$value.Split(@(';'), $option)}.Invoke()
+    return {$value.Split(@(','), $option)}.Invoke()
   }
 }
 
@@ -130,7 +130,7 @@ function UpdateCabal-Config {
     $values = ""
   }
   $prog = "$cabal"
-  $value = [String]::Join(";", $values)
+  $value = [String]::Join(",", $values)
   $cmd  = "user-config update -a `"${key}: $value`""
 
   $proc = Execute-Command "Update cabal config key '${key}'." $prog $cmd
