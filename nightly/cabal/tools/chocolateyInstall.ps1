@@ -15,7 +15,47 @@ Install-ChocolateyZipPackage `
 
 $cabal = Join-Path $packageFullName "cabal.exe"
 
-  function Find-Entry {
+# Simplified version of Install-ChocolateyPath that prepends instead of
+# Appends to a path.  We use this in certain cases when we need to Override an
+# existing path entry.  Such as on AppVeyor which adds both cygwin and msys2
+# on PATH.
+function Install-AppVeyorPath {
+param(
+  [parameter(Mandatory=$true, Position=0)][string] $pathToInstall
+)
+
+  Write-FunctionCallLogMessage -Invocation $MyInvocation -Parameters $PSBoundParameters
+  ## Called from chocolateysetup.psm1 - wrap any Write-Host in try/catch
+
+  $originalPathToInstall = $pathToInstall
+  $pathType = [System.EnvironmentVariableTarget]::Machine
+
+  #get the PATH variable
+  Update-SessionEnvironment
+  $envPath = $env:PATH
+  if (!$envPath.ToLower().Contains($pathToInstall.ToLower()))
+  {
+    try {
+      Write-Host "PATH environment variable does not have $pathToInstall in it. Adding..."
+    } catch {
+      Write-Verbose "PATH environment variable does not have $pathToInstall in it. Adding..."
+    }
+
+    $actualPath = Get-EnvironmentVariable -Name 'Path' -Scope $pathType -PreserveVariables
+
+    $statementTerminator = ";"
+    if (!$pathToInstall.EndsWith($statementTerminator)) {$pathToInstall = $pathToInstall + $statementTerminator}
+    $actualPath = $pathToInstall + $actualPath
+
+    Set-EnvironmentVariable -Name 'Path' -Value $actualPath -Scope $pathType
+
+    #add it to the local path as well so users will be off and running
+    $envPSPath = $env:PATH
+    $env:Path = $pathToInstall + $envPSPath
+  }
+}
+
+function Find-Entry {
     param( [string] $app )
     Get-Command -ErrorAction SilentlyContinue $app `
       | Select-Object -first 1 `
@@ -189,8 +229,11 @@ function Configure-Cabal {
     ForEach ($path in $ghcpaths) { Install-ChocolateyPath $path }
 
     # I'm not a fan of doing this, but we need auto-reconf available.
-    Install-ChocolateyPath (Join-Path (Join-Path "${msys2_path}" "mingw64") "bin")
-    Install-ChocolateyPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
+    Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "mingw64") "bin")
+    Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
+    # Override msys2 git with git for Windows
+    Install-AppVeyorPath "$($env:SystemDrive)\Program Files\Git\cmd"
+    Install-AppVeyorPath "$($env:SystemDrive)\Program Files\Git\mingw64\bin"
   }
 }
 
