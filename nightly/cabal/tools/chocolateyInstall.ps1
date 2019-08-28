@@ -216,7 +216,9 @@ function Configure-Cabal {
 
   # Set install method if no default is set
   if ($method -ne "copy" -and $method -ne "symlink" -and $method -ne "auto")
-    $method = "copy"
+    {
+      $method = "copy"
+    }
 
   UpdateCabal-Config "extra-prog-path"    $new_prog_paths
   UpdateCabal-Config "extra-lib-dirs"     $new_lib_dirs
