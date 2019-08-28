@@ -143,9 +143,9 @@ function ReadCabal-Config {
   $proc = Execute-Command "Reading cabal config key '${key}'." $prog $cmd
 
   if ($proc.ExitCode -ne 0) {
-    Write-Error $proc.stdout
-    Write-Error $proc.stderr
-    throw ("Could not read cabal configuration key '${key}'.")
+    Write-Debug $proc.stdout
+    Write-Debug $proc.stderr
+    Write-Information "Could not read cabal configuration key '${key}'."
   }
 
   $option = [System.StringSplitOptions]::RemoveEmptyEntries
@@ -189,6 +189,8 @@ function Configure-Cabal {
 
   $ErrorActionPreference = 'Stop'
   $msys2_path   = Find-MSYS2
+
+  # Initialize cabal
   $prog_path    = ReadCabal-Config "extra-prog-path"
   $lib_dirs     = ReadCabal-Config "extra-lib-dirs"
   $include_dirs = ReadCabal-Config "extra-include-dirs"
@@ -223,7 +225,6 @@ function Configure-Cabal {
   UpdateCabal-Config "extra-prog-path"    $new_prog_paths
   UpdateCabal-Config "extra-lib-dirs"     $new_lib_dirs
   UpdateCabal-Config "extra-include-dirs" $new_include_dirs
-  UpdateCabal-Config "install-method"     $method
 
   Write-Host "Updated cabal configuration."
 

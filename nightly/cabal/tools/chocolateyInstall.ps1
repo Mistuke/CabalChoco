@@ -14,7 +14,6 @@ Install-ChocolateyZipPackage `
   -Url64bit $url64 -ChecksumType64 sha256 -Checksum64 %deploy.sha256.64bit%
 
 $cabal = Join-Path $packageFullName "cabal.exe"
-
 # Simplified version of Install-ChocolateyPath that prepends instead of
 # Appends to a path.  We use this in certain cases when we need to Override an
 # existing path entry.  Such as on AppVeyor which adds both cygwin and msys2
@@ -143,9 +142,9 @@ function ReadCabal-Config {
   $proc = Execute-Command "Reading cabal config key '${key}'." $prog $cmd
 
   if ($proc.ExitCode -ne 0) {
-    Write-Error $proc.stdout
-    Write-Error $proc.stderr
-    throw ("Could not read cabal configuration key '${key}'.")
+    Write-Debug $proc.stdout
+    Write-Debug $proc.stderr
+    Write-Information "Could not read cabal configuration key '${key}'."
   }
 
   $option = [System.StringSplitOptions]::RemoveEmptyEntries
@@ -189,6 +188,8 @@ function Configure-Cabal {
 
   $ErrorActionPreference = 'Stop'
   $msys2_path   = Find-MSYS2
+
+  # Initialize cabal
   $prog_path    = ReadCabal-Config "extra-prog-path"
   $lib_dirs     = ReadCabal-Config "extra-lib-dirs"
   $include_dirs = ReadCabal-Config "extra-include-dirs"
