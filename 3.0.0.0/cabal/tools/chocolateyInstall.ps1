@@ -145,7 +145,7 @@ function ReadCabal-Config {
   if ($proc.ExitCode -ne 0) {
     Write-Debug $proc.stdout
     Write-Debug $proc.stderr
-    Write-Information "Could not read cabal configuration key '${key}'."
+    Write-Host "Could not read cabal configuration key '${key}'."
   }
 
   $option = [System.StringSplitOptions]::RemoveEmptyEntries
