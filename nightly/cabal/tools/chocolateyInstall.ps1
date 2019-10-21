@@ -26,10 +26,9 @@ param(
   Write-FunctionCallLogMessage -Invocation $MyInvocation -Parameters $PSBoundParameters
   ## Called from chocolateysetup.psm1 - wrap any Write-Host in try/catch
 
-  $originalPathToInstall = $pathToInstall
   $pathType = [System.EnvironmentVariableTarget]::Machine
 
-  #get the PATH variable
+  # get the PATH variable
   Update-SessionEnvironment
   $envPath = $env:PATH
   if (!$envPath.ToLower().Contains($pathToInstall.ToLower()))
@@ -48,11 +47,45 @@ param(
 
     Set-EnvironmentVariable -Name 'Path' -Value $actualPath -Scope $pathType
 
-    #add it to the local path as well so users will be off and running
+    # add it to the local path as well so users will be off and running
     $envPSPath = $env:PATH
     $env:Path = $pathToInstall + $envPSPath
   }
 }
+
+# uninstall a path entry from AppVeyor
+function UnInstall-AppVeyorPath {
+  param(
+    [parameter(Mandatory=$true, Position=0)][string] $pathToRemove
+  )
+
+    Write-FunctionCallLogMessage -Invocation $MyInvocation -Parameters $PSBoundParameters
+    ## Called from chocolateysetup.psm1 - wrap any Write-Host in try/catch
+
+    $pathType = [System.EnvironmentVariableTarget]::Machine
+
+    # get the PATH variable
+    Update-SessionEnvironment
+    $envPath = $env:PATH
+    if ($envPath.ToLower().Contains($pathToRemove.ToLower()))
+    {
+      try {
+        Write-Host "PATH environment variable contains $pathToRemove in it. Removing..."
+      } catch {
+        Write-Verbose "PATH environment variable contains $pathToRemove in it. Removing..."
+      }
+
+      $statementTerminator = ";"
+      $actualPath = Get-EnvironmentVariable -Name 'Path' -Scope $pathType -PreserveVariables
+      $actualPath = ($path.Split($statementTerminator) | Where-Object { $_ -ne $pathToRemove }) -join $statementTerminator
+
+      Set-EnvironmentVariable -Name 'Path' -Value $actualPath -Scope $pathType
+
+      # Remove it from the local path as well so users will be off and running
+      $env:Path = $actualPath
+    }
+  }
+
 
 function Find-Entry {
     param( [string] $app )
@@ -200,9 +233,10 @@ function Configure-Cabal {
   # Build new binary paths
   $native_bin     = Join-Path $native_path "bin"
   $new_prog_paths = @()
-  $new_prog_paths += Join-Path (Join-Path $msys2_path "usr") "bin"
   $new_prog_paths += $native_bin
   $new_prog_paths += $prog_path
+  $new_prog_paths += Join-Path (Join-Path $Env:APPDATA "cabal") "bin"
+  $new_prog_paths += Join-Path (Join-Path $msys2_path "usr") "bin"
   $new_prog_paths = $new_prog_paths | Select-Object -Unique
 
   # Build new library paths
@@ -235,12 +269,19 @@ function Configure-Cabal {
     $ghcpaths = Detect-GHC-Versions
     ForEach ($path in $ghcpaths) { Install-ChocolateyPath $path }
 
+    # Remove the global /usr/bin that's before the local one.
+    UnInstall-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
+
     # I'm not a fan of doing this, but we need auto-reconf available.
     Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "mingw64") "bin")
     Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
+
     # Override msys2 git with git for Windows
     Install-AppVeyorPath "$($env:SystemDrive)\Program Files\Git\cmd"
     Install-AppVeyorPath "$($env:SystemDrive)\Program Files\Git\mingw64\bin"
+
+    # Also set a global SR.
+    UpdateCabal-Config "store-dir" "$($env:SystemDrive)\SR"
   }
 }
 

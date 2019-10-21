@@ -30,7 +30,7 @@ Param(
   [ValidateSet("install","uninstall", "update", "shell")]
   [String] $Action
 , [string] $Package
-, [switch] $NoConfirm = $false
+, [string] $NoConfirm = "--confirm"
 )
 
 $bash = $Env:_MSYS2_BASH
@@ -92,7 +92,7 @@ switch ($Action){
   Indicates whether or not an interactive prompt should be used to confirm before
   action is carried out.
 .EXAMPLE
-  C:\PS> mingw-pkg install gtk2
+  C:\PS> mingw-pkg install gtk2 [--confirm|--noconfirm]
 .NOTES
   Author: Tamar Christina
   Date:   February 16, 2019"
@@ -101,13 +101,17 @@ switch ($Action){
 }
 
 switch ($NoConfirm){
-  $true {
+  "--noconfirm" {
     $arg = "--noconfirm"
     break
   }
-  $false {
+  "--confirm" {
     $arg = "--confirm"
     break
+  }
+  default {
+    Write-Error "Unkown option $NoConfirm. Expected --confirm or --noconfirm."
+    return;
   }
 }
 
