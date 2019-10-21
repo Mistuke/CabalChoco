@@ -272,13 +272,14 @@ function Configure-Cabal {
     # Remove the global /usr/bin that's before the local one.
     UnInstall-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
 
-    # I'm not a fan of doing this, but we need auto-reconf available.
-    Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "mingw64") "bin")
-    Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
-
     # Override msys2 git with git for Windows
     Install-AppVeyorPath "$($env:SystemDrive)\Program Files\Git\cmd"
     Install-AppVeyorPath "$($env:SystemDrive)\Program Files\Git\mingw64\bin"
+
+    # I'm not a fan of doing this, but we need auto-reconf available.
+    # Add the /usr/bin path first so it appears last in the list
+    Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "usr") "bin")
+    Install-AppVeyorPath (Join-Path (Join-Path "${msys2_path}" "mingw64") "bin")
 
     # Also set a global SR.
     UpdateCabal-Config "store-dir" "$($env:SystemDrive)\SR"
