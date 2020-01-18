@@ -216,6 +216,24 @@ function UpdateCabal-Config {
   Write-Debug "Wrote Cabal config ${key}: ${value}"
 }
 
+function UpdateCabal-Config-Raw {
+  param( [string] $value
+       )
+
+  $prog = "$cabal"
+  $cmd  = "user-config update $value"
+
+  $proc = Execute-Command "Update cabal config key '${value}'." $prog $cmd
+
+  if ($proc.ExitCode -ne 0) {
+    Write-Error $proc.stdout
+    Write-Error $proc.stderr
+    throw ("Could not update cabal configuration key '${value}'.")
+  }
+
+  Write-Debug "Wrote Cabal config ${value}"
+}
+
 function Configure-Cabal {
   param()
 
@@ -227,8 +245,9 @@ function Configure-Cabal {
   $lib_dirs     = ReadCabal-Config "extra-lib-dirs"
   $include_dirs = ReadCabal-Config "extra-include-dirs"
   $method       = ReadCabal-Config "install-method"
-  $native_path = if ($is64) { 'mingw64' } else { 'mingw32' }
-  $native_path = Join-Path $msys2_path $native_path
+  $native_path  = if ($is64) { 'mingw64' } else { 'mingw32' }
+  $native_path  = Join-Path $msys2_path $native_path
+  $msys_lib_dir = Join-Path $native_path "lib"
 
   # Build new binary paths
   $native_bin     = Join-Path $native_path "bin"
@@ -240,7 +259,7 @@ function Configure-Cabal {
   $new_prog_paths = $new_prog_paths | Select-Object -Unique
 
   # Build new library paths
-  $new_lib_dirs = @(Join-Path $native_path "lib")
+  $new_lib_dirs = @($msys_lib_dir)
   $new_lib_dirs += $lib_dirs
   $new_lib_dirs = $new_lib_dirs | Select-Object -Unique
 
@@ -248,6 +267,13 @@ function Configure-Cabal {
   $new_include_dirs = @(Join-Path $native_path "include")
   $new_include_dirs += $include_dirs
   $new_include_dirs = $new_include_dirs | Select-Object -Unique
+
+  # If the directory doesn't exist, create it to prevent GHC from throwing an
+  # error when the linker tries to add the dir.
+  if (!(Test-Path $msys_lib_dir -PathType Container))
+    {
+      New-Item -ItemType Directory -Force -Path $msys_lib_dir
+    }
 
   # Set install method if no default is set
   if ($method -ne "copy" -and $method -ne "symlink" -and $method -ne "auto")
@@ -261,8 +287,36 @@ function Configure-Cabal {
 
   Write-Host "Updated cabal configuration."
 
-  Install-ChocolateyPath (Join-Path (Join-Path "$Env:APPDATA" "cabal") "bin")
+  $cabal_path = Join-Path (Join-Path "$Env:APPDATA" "cabal") "bin"
+  Install-ChocolateyPath "$cabal_path"
 
+  # Add a PATH to pkg-config location
+  $pkg_config = Join-Path $native_bin "ghc-pkg.exe"
+  UpdateCabal-Config-Raw `
+    "-a `"program-locations`" -a `" pkg-config-location: $pkg_config`""
+
+  # If running on Github actions, configure the package to pick things up
+  if (($null -ne $Env:GITHUB_ACTIONS) -and ("" -ne $Env:GITHUB_ACTIONS)) {
+    # Update the path on github actions as without so it won't be able to find
+    # cabal.
+    Write-Host "::add-path::$cabal_path"
+
+    # We probably don't need this since choco itself is already on the PATH
+    # But it won't hurt to make sure.
+    $choco_bin = Join-Path $env:ChocolateyInstall "bin"
+    Write-Host "::add-path::$choco_bin"
+
+    # New GHC Packages will add themselves to the PATH, but older ones don't.
+    # So let's find which one the user installed and add them to the pathh.
+    $files = get-childitem $binRoot -include ghc.exe -recurse
+
+    foreach ($file in $files) {
+      $fileDir = Split-Path "$file"
+      Write-Host "::add-path::$fileDir"
+    }
+  }
+
+  # If running on Appveyor, configure the package to pick things up
   if (($null -ne $Env:APPVEYOR) -and ("" -ne $Env:APPVEYOR)) {
     Write-Host "Configuring AppVeyor PATH."
     # We need to fix up some paths for AppVeyor
