@@ -259,7 +259,17 @@ function Configure-Cabal {
   $new_prog_paths = $new_prog_paths | Select-Object -Unique
 
   # Build new library paths
-  $new_lib_dirs = @($msys_lib_dir)
+
+  # If the directory doesn't exist, we can't add it to prevent GHC from throwing
+  # an error when the linker tries to add the dir.
+  if (Test-Path $msys_lib_dir -PathType Container)
+    {
+      $new_lib_dirs = @($msys_lib_dir)
+    }
+  else
+    {
+      $new_lib_dirs = @()
+    }
   $new_lib_dirs += $lib_dirs
   $new_lib_dirs = $new_lib_dirs | Select-Object -Unique
 
@@ -267,13 +277,6 @@ function Configure-Cabal {
   $new_include_dirs = @(Join-Path $native_path "include")
   $new_include_dirs += $include_dirs
   $new_include_dirs = $new_include_dirs | Select-Object -Unique
-
-  # If the directory doesn't exist, create it to prevent GHC from throwing an
-  # error when the linker tries to add the dir.
-  if (!(Test-Path $msys_lib_dir -PathType Container))
-    {
-      New-Item -ItemType Directory -Force -Path $msys_lib_dir
-    }
 
   # Set install method if no default is set
   if ($method -ne "copy" -and $method -ne "symlink" -and $method -ne "auto")
@@ -290,10 +293,13 @@ function Configure-Cabal {
   $cabal_path = Join-Path (Join-Path "$Env:APPDATA" "cabal") "bin"
   Install-ChocolateyPath "$cabal_path"
 
-  # Add a PATH to pkg-config location
-  $pkg_config = Join-Path $native_bin "ghc-pkg.exe"
-  UpdateCabal-Config-Raw `
-    "-a `"program-locations`" -a `" pkg-config-location: $pkg_config`""
+  # Add a PATH to pkg-config location if exists
+  $pkg_config = Join-Path $native_bin "pkg-config.exe"
+  if (Test-Path $pkg_config)
+    {
+      UpdateCabal-Config-Raw `
+        "-a `"program-locations`" -a `" pkg-config-location: $pkg_config`""
+    }
 
   # If running on Github actions, configure the package to pick things up
   if (($null -ne $Env:GITHUB_ACTIONS) -and ("" -ne $Env:GITHUB_ACTIONS)) {

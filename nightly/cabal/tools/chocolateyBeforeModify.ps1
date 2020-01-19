@@ -160,14 +160,6 @@ function Restore-Config-Cabal {
   UpdateCabal-Config "extra-lib-dirs"     $new_lib_dirs
   UpdateCabal-Config "extra-include-dirs" $new_include_dirs
 
-  # Remove the directory if it's still empty when we're uninstalling
-  if (Test-Path "$msys_lib_dir\*")
-    {
-      Get-ChildItem -Directory $native_path |`
-        Where-Object { $_.GetFileSystemInfos().Count -eq 0 } |`
-        Remove-Item
-    }
-
   Write-Host "Restored cabal configuration."
 }
 
