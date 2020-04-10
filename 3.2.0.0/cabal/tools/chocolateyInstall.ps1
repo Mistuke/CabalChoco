@@ -10,8 +10,8 @@ $is64 = (Get-OSArchitectureWidth 64)  -and $env:chocolateyForceX86 -ne 'true'
 Install-ChocolateyZipPackage `
   -PackageName $packageName `
   -UnzipLocation $packageFullName `
-  -Url $url -ChecksumType sha256 -Checksum 0501edc04c6eae514abcb5c13221c70399883f0f `
-  -Url64bit $url64 -ChecksumType64 sha256 -Checksum64 918d971a0fbc9f054de33d7b5001417b6afeebc3
+  -Url $url -ChecksumType sha256 -Checksum 01e14a9c4ec96452087b5cc90157693bbc4e0045b9c11e48f5f324b7977d837b `
+  -Url64bit $url64 -ChecksumType64 sha256 -Checksum64 17778c3ade0482bc37f451eec326f8fce8fbe1f12b1d6aacb2e2b9e34786c054
 
 $cabal = Join-Path $packageFullName "cabal.exe"
 # Simplified version of Install-ChocolateyPath that prepends instead of
