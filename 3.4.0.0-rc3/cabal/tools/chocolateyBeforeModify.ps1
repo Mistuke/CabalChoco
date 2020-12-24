@@ -60,7 +60,7 @@ function Find-MSYS2 {
   if (($null -eq $msys2) -or ($msys2 -eq "")) {
     $tmp = Join-Path $Env:SystemDrive $dir_name
     if (Test-Path $tmp -PathType Container) {
-      Write-Information "Standalone msys2 detected. Using default paths."
+      Write-Host "Standalone msys2 detected. Using default paths."
       $msys2 = $tmp
     }
   }

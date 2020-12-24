@@ -168,7 +168,7 @@ function Find-MSYS2 {
   if (($null -eq $msys2) -or ($msys2 -eq "")) {
     $tmp = Join-Path $Env:SystemDrive $dir_name
     if (Test-Path $tmp -PathType Container) {
-      Write-Information "Standalone msys2 detected. Using default paths."
+      Write-Host "Standalone msys2 detected. Using default paths."
       $msys2 = $tmp
     }
   }
@@ -195,7 +195,7 @@ function ReadCabal-Config {
   if ($proc.ExitCode -ne 0) {
     Write-Debug $proc.stdout
     Write-Debug $proc.stderr
-    Write-Information "Could not read cabal configuration key '${key}'."
+    Write-Host "Could not read cabal configuration key '${key}'."
   }
 
   $option = [System.StringSplitOptions]::RemoveEmptyEntries
