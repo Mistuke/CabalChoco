@@ -325,12 +325,12 @@ function Configure-Cabal {
   if (($null -ne $Env:GITHUB_ACTIONS) -and ("" -ne $Env:GITHUB_ACTIONS)) {
     # Update the path on github actions as without so it won't be able to find
     # cabal.
-    Write-Host "::add-path::$cabal_path"
+    echo "$cabal_path" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     # We probably don't need this since choco itself is already on the PATH
     # But it won't hurt to make sure.
     $choco_bin = Join-Path $env:ChocolateyInstall "bin"
-    Write-Host "::add-path::$choco_bin"
+    echo "$choco_bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
 
     # New GHC Packages will add themselves to the PATH, but older ones don't.
     # So let's find which one the user installed and add them to the pathh.
@@ -338,7 +338,7 @@ function Configure-Cabal {
 
     foreach ($file in $files) {
       $fileDir = Split-Path "$file"
-      Write-Host "::add-path::$fileDir"
+      echo "$fileDir" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
     }
   }
 
