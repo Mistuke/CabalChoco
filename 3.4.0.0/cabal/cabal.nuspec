@@ -31,8 +31,6 @@ The Cabal is only one contribution to the larger goal. In particular, the Cabal 
         <projectSourceUrl>https://github.com/haskell/cabal/</projectSourceUrl>
         <packageSourceUrl>https://github.com/Mistuke/CabalChoco</packageSourceUrl>
     <dependencies>
-      <!-- Bah, needed on every package because chocolatey doesn't insure the choco client itself installs it. -->
-      <dependency id="kb2919355" />
     </dependencies>
     </metadata>
     <files>
