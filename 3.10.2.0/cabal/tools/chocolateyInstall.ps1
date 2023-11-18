@@ -1,7 +1,7 @@
-$version     = '3.10.1.0'
+$version     = '3.10.2.0'
 $packageName = 'cabal'
 $url         = 'https://downloads.haskell.org/cabal/cabal-install-3.2.0.0/cabal-install-3.2.0.0-i386-unknown-mingw32.zip'
-$url64       = 'https://downloads.haskell.org/cabal/cabal-install-3.10.1.0/cabal-install-3.10.1.0-x86_64-windows.zip'
+$url64       = 'https://downloads.haskell.org/cabal/cabal-install-3.10.2.0/cabal-install-3.10.2.0-x86_64-windows.zip'
 $binRoot         = $(Split-Path -parent $MyInvocation.MyCommand.Definition)
 $packageFullName = Join-Path $binRoot ($packageName + '-' + $version)
 $is64 = (Get-OSArchitectureWidth 64)  -and $env:chocolateyForceX86 -ne 'true'
@@ -28,7 +28,7 @@ Install-ChocolateyZipPackage `
   -PackageName $packageName `
   -UnzipLocation $packageFullName `
   -Url $url -ChecksumType sha256 -Checksum 01e14a9c4ec96452087b5cc90157693bbc4e0045b9c11e48f5f324b7977d837b `
-  -Url64bit $url64 -ChecksumType64 sha256 -Checksum64 31ca1cd173d4da675bc9790746d6b492cbe204e0332b282141d7ecc8ae43997b
+  -Url64bit $url64 -ChecksumType64 sha256 -Checksum64 b09e335b2ebeafa1db5e1e5614e3e10fb37da230a36865d76646ab27b2f3f46b
 
 $cabal = Join-Path $packageFullName "cabal.exe"
 # Simplified version of Install-ChocolateyPath that prepends instead of
