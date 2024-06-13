@@ -1,7 +1,7 @@
 $version     = '3.10.3.0'
 $packageName = 'cabal'
 $url         = 'https://downloads.haskell.org/cabal/cabal-install-3.2.0.0/cabal-install-3.2.0.0-i386-unknown-mingw32.zip'
-$url64       = 'https://downloads.haskell.org/cabal/cabal-install-3.10.2.0/cabal-install-3.10.3.0-x86_64-windows.zip'
+$url64       = 'https://downloads.haskell.org/cabal/cabal-install-3.10.3.0/cabal-install-3.10.3.0-x86_64-windows.zip'
 $binRoot         = $(Split-Path -parent $MyInvocation.MyCommand.Definition)
 $packageFullName = Join-Path $binRoot ($packageName + '-' + $version)
 $is64 = (Get-OSArchitectureWidth 64)  -and $env:chocolateyForceX86 -ne 'true'
